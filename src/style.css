@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+    --breakpoint-z: 0rem;
+    --breakpoint-zl: 360px;
+    --color-beige-lp: oklch(0.92 0.0353 72.88);
+    --color-beige-st: oklch(0.832 0.0894 61.13);
+    --color-red-st: oklch(0.7236 0.1714 22.31);
+    --color-coin: oklch(0.8409 0.1381 75.12);
+    --color-darkgreen-lp: #485d4f;
+    --color-green-lp: oklch(0.62 0.0443 157.07);
+    --color-black-lp: oklch(0.23 0.0046 17.49);
+    --color-brown-lp: oklch(0.57 0.0904 32.62);
+    --font-poppins: "Poppins", sans-serif;
+    --font-ibm-plex: "IBM Plex Mono", sans-serif;
+    --font-open-sans: "Open Sans", sans-serif;
+    --font-alata: "Alata", sans-serif;
+    --shadow-stblack: 7px 7px 0px 0px oklch(0.23 0.0046 17.49); 
+}
+
+@keyframes progress {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+        
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-in-out;
+}
+
+.screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.progress-bar {
+    overflow: hidden;
+}
+
+.progress-fill {
+    animation: progress 3s forwards;
+}
+
+.heart {
+    color: #e53e3e;
+}
+
+.option-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.correct-answer {
+    background-color: #c6f6d5 !important;
+    border: 2px solid #48bb78;
+}
+
+.wrong-answer {
+    background-color: #fed7d7 !important;
+    border: 2px solid #e53e3e;
+}
+
+.option-number {
+    transition: all 0.3s ease;
+}
+
+.option-card:hover .option-number {
+    transform: scale(1.2);
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.7;
+}

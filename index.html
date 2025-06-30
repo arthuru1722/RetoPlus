@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="bg-amber-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retórica+</title>
+    <!--css-->
+    <link rel="stylesheet" href="./src/style.css">
+    <link rel="stylesheet" href="./src/animations/anim.css">
+    <!--fontes-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alata&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!--script-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="./src/animations/anim.js"></script>
+</head>
+<body class="font-sans bg-gray-100">
+    <!-- Tela Inicial (0) -->
+    <div id="screen-0" class="screen flex items-center justify-center bg-green-lp">
+        <div class="text-center flex flex-col items-center justify-center mx-4">
+            <div class="p-2 w-140 h-48 mx-auto mb-8 flex items-center justify-center">
+                <div class="w-200 h-32 flex items-center justify-center">
+                    <img src="./assets/images/reto-logo.webp" alt="Retorica+">
+                </div>
+            </div>
+            
+            <div class="space-y-4 max-w-[80vw] sm:max-w-md">
+                <button onclick="changeScreen('loading')" class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                    JOGAR
+                </button>
+                
+                <button onclick="changeScreen(3)" class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                    ESTATÍSTICAS
+                </button>
+                
+                <button class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                    LITERATURA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Loading -->
+    <div id="loading-screen" class="screen flex flex-col items-center justify-center bg-green-lp">
+        <div class="h-full text-center flex flex-col p-10 items-center justify-center w-full max-w-full">
+            <div class="bg-darkgreen-lp shadow-stblack flex items-center justify-center border-black-lp border-6 lg:w-2xl w-full md:h-60 rounded-2xl p-8">
+                <p id="hint-text" class="text-beige-lp text-xl lg:text-3xl font-alata text-center">Algo deu Errado aqui....</p>
+            </div>
+        </div>
+        <div class="h-8 mb-20 flex flex-col items-center justify-center w-[95%] max-w-full">
+          <div id="progress-bar" class="progress-bar rounded-full h-16 w-full bg-black-lp">
+              <div class="progress-fill h-full bg-beige-lp"></div>
+          </div>
+
+          <p id="continue-text" class="text-darkgreen-lp max-w-xl text-xl md:text-4xl font-alata hidden">CLIQUE NA TELA PARA CONTINUAR</p>
+        </div>
+    </div>
+
+    <!-- Tela de Jogo (1) -->
+    <div id="screen-1" class="screen p-10 md:p-25 flex justify-center bg-beige-st">
+        <div class="game-container w-full gap-2 md:gap-10 max-w-[1500px] justify-between items-center flex flex-col md:flex-row">
+            <!-- Painel Esquerdo -->
+            <div class="flex flex-col w-5/5 max-w-170">
+                <!-- Janela de Pergunta -->
+                <div class="bg-green-lp text-beige-lp p-2 md:p-6 lg:min-h-45 shadow-stblack border-2 border-black-lp mb-4">
+                    <h2 class="text-base font-alata mb-2 w-full text-center">Pergunta</h2>
+                    <p id="question-text" class="text-xl lg:text-2xl h-full text-center font-bold font-poppins">Carregando pergunta...</p>
+                </div>
+                
+                <!-- Três Janelas -->
+                <div class="grid grid-cols-[3fr_3fr_0fr] gap-3 mb-4">
+                    <div class="bg-red-st h-full border-2 border-black-lp text-center">
+                        <h3 class="font-bold text-sm font-poppins text-beige-lp">TEMPO:</h3>
+                        <div id="timer" class="text-3xl font-alata text-beige-lp">00:30</div>
+                    </div>
+                    
+                    <div class="bg-beige-lp h-full border-2 border-black-lp text-center">
+                        <h3 class="font-bold font-poppins text-sm text-black-lp">PONTUAÇÃO:</h3>
+                        <div id="score" class="text-3xl font-alata  text-black-lp">0</div>
+                    </div>
+                    
+                    <div class="bg-brown-lp text-2xl h-full border-2 border-black-lp flex justify-center items-center">
+                        <i class="fa-solid fa-hippo m-3"></i>
+                        <!-- não sei ao certo oq é isso -->
+                    </div>
+                </div>
+                
+                <!-- Quadrado Branco Vazio -->
+                <div class="bg-beige-lp flex-grow h-30 md:h-70 shadow-stblack border-2 border-black-lp">
+
+                </div>
+            </div>
+            
+            <!-- Painel Direito (Opções) -->
+            <div class="flex flex-col w-full md:w-auto">
+                <div id="options-container" class="flex flex-col gap-4 md:gap-10 flex-grow">
+                    <!-- As opções são inseridas aqui pelo JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Fim de Jogo (2) -->
+    <div id="screen-2" class="screen bg-black-lp">
+        <div class="flex h-full w-full items-center justify-center bg-gradient-to-t from-red-st to-[#110000] rounded-b-[150px]">
+            <div class="text-center mx-4">
+                <h1 class="text-8xl font-bold text-beige-lp  border-b-3">FIM DE JOGO</h1>
+                <p class="text-beige-lp text-xl mb-4">SEU TEMPO ACABOU :/</p>
+                <button onclick="changeScreen(0)" class="mt-6 bg-primary text-white font-bold py-3 px-6 rounded-full hover:bg-dark transition">
+                    <i class="fas fa-home mr-2"></i>Voltar ao Início
+                </button>
+            </div>
+        </div>  
+    </div>
+
+    <!-- Tela de Estatísticas (3) -->
+    <div id="screen-3" class="screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
+            <h1 class="text-3xl font-bold text-primary text-center mb-6">Estatísticas</h1>
+            
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Desempenho</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>Perguntas respondidas</div>
+                        <div class="font-bold" id="stats-questions">0</div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>Taxa de acertos</div>
+                        <div class="font-bold" id="stats-accuracy">0%</div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>Pontuação máxima</div>
+                        <div class="font-bold" id="stats-highscore">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Último Jogo</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>Pontuação</div>
+                        <div class="font-bold" id="stats-last-score">0</div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>Perguntas</div>
+                        <div class="font-bold" id="stats-last-questions">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="changeScreen(0)" class="w-full bg-primary text-white font-bold py-3 px-6 rounded-full hover:bg-dark transition">
+                <i class="fas fa-home mr-2"></i>Voltar ao Início
+            </button>
+        </div>
+    </div>
+    <script src="./src/main.js"></script>
+</body>
+</html>
