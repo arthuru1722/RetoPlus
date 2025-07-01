@@ -1,3 +1,5 @@
+import * as anim from './animations/anim.js'
+
 // Elementos DOM
 const screens = {
     0: document.getElementById('screen-0'),
@@ -12,7 +14,6 @@ const continueText = document.getElementById('continue-text');
 const questionText = document.getElementById('question-text');
 const timerDisplay = document.getElementById('timer');
 const scoreDisplay = document.getElementById('score');
-const heartsContainer = document.getElementById('hearts');
 const optionsContainer = document.getElementById('options-container');
 const finalScoreDisplay = document.getElementById('final-score');
 const totalQuestionsDisplay = document.getElementById('total-questions');
@@ -25,10 +26,8 @@ const statsHighscore = document.getElementById('stats-highscore');
 const statsLastScore = document.getElementById('stats-last-score');
 const statsLastQuestions = document.getElementById('stats-last-questions');
 
-// Estado do jogo
 let gameState = {
     currentScreen: 0,
-    lives: 5,
     score: 0,
     timer: 30,
     timerInterval: null,
@@ -48,7 +47,7 @@ let gameState = {
         lastScore: 0,
         lastQuestions: 0
     }
-};
+};  
 
 // Função para mudar de tela
 function changeScreen(screenNumber) {
@@ -74,6 +73,21 @@ function changeScreen(screenNumber) {
         updateStats();
     }
 }
+
+window.changeScreen = changeScreen;
+
+function deathScreen(action) {
+    document.querySelectorAll("deathBTN").disabled = true;
+    if (action === 0) {
+        changeScreen(0);
+        anim.resetAnimation();        
+    } else if (action === 1) {
+        changeScreen(1);        
+        anim.resetAnimation();   
+    }
+}
+
+window.deathScreen = deathScreen;
 
 // Tela de loading
 async function startLoadingScreen() {
@@ -110,12 +124,6 @@ async function loadHints() {
     if (!response.ok) throw new Error(`Erro HTTP! status: ${response.status}`);
     
     let text = await response.text();
-    
-    // Corrige a vírgula faltante no final
-    text = text.replace(
-        /"Se você permanecer nessa tela por 10 minutos algo acontecerá... quer descobrir\?"\s*"Digite/g,
-        '"Se você permanecer nessa tela por 10 minutos algo acontecerá... quer descobrir?",\n"Digite'
-    );
     
     // Extrai apenas o conteúdo do array
     const arrayStart = text.indexOf('[');
@@ -306,7 +314,7 @@ function displayQuestion() {
             <div class="flex items-center justify-center w-full">
                 <!-- <div class="option-number w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3">
                     ${index + 1}
-                </div> --!>
+                </div> -->
                 <div class="text-beige-lp font-poppins font-bold text-md md:text-2xl">${option}</div>
             </div>
         `;
@@ -331,7 +339,8 @@ function startTimer() {
         if (gameState.timer <= 0) {
             // Tempo esgotado - fim de jogo
             clearInterval(gameState.timerInterval);
-            changeScreen(2);
+            anim.startAnimation();
+            gameState.canAnswer = false;
         }
     }, 1000);
 }
@@ -372,22 +381,6 @@ function checkAnswer(selectedIndex) {
             changeScreen(2);
         }
     }, 1500);
-}
-
-// Manipula resposta errada
-function handleWrongAnswer() {
-    // Verificar se ainda pode perder vida (evita múltiplas deduções)
-    if (gameState.lives > 0) {
-        gameState.lives--;
-        updateGameUI();
-    }
-    
-    if (gameState.lives <= 0) {
-        // Fim de jogo
-        setTimeout(() => {
-            changeScreen(2);
-        }, 1500);
-    }
 }
 
 // Atualiza a UI com o estado atual do jogo
@@ -432,5 +425,4 @@ function resetGameState() {
 }
 
 // Inicializa o jogo na tela inicial
-changeScreen('2');
-//startGame()
+changeScreen('0');

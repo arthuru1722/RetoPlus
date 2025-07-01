@@ -1,38 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
-            
-const startBtn = document.getElementById('start-btn');
-const resetBtn = document.getElementById('reset-btn');
 const intactHeart = document.getElementById('intact-heart');
 const crackedHeart = document.getElementById('cracked-heart');
 const impactFrame = document.getElementById('impact-frame');
 const bloodOverlay = document.getElementById('blood-overlay');
 const finalMessage = document.querySelector('.final-message');
 const crackSound = document.querySelector('.crack-sound');
-startBtn.addEventListener('click', startAnimation);
-resetBtn.addEventListener('click', resetAnimation);
 
-setTimeout(resetAnimation, 1);
+
+resetAnimation();
 
 function startAnimation() {
-    // Desativar o botão durante a animação
-    startBtn.disabled = true;
-    startBtn.classList.remove('pulse');
     
     // Criar timeline para sincronizar as animações
     const tl = gsap.timeline();
     
-    // ANIMAÇÃO DE SURGIMENTO DO CORAÇÃO (NOVA)
+    // ANIMAÇÃO DE SURGIMENTO DO CORAÇÃO
     tl.to(intactHeart, {
         opacity: 1,
         scale: 1,
         duration: 0.5,
-        ease: "power1.out",
-        delay: 0.2
+        ease: "power1.in",
     });
     
     // Pausa antes do próximo efeito
     tl.to(intactHeart, {
-        duration: 0.5
+        duration: 0.4
     });
     
     // Tremer o coração antes de rachar
@@ -104,26 +95,17 @@ function startAnimation() {
         opacity: 1,
         scale: 1.2,
         duration: 1,
-        ease: "elastic.out(1, 0.5)"
-    }, "-=1");
-    
-    // Mostrar botão de reset
-    tl.to(resetBtn, {
-        display: "block",
-        opacity: 1,
-        duration: 0.5
-    }, "-=0.5");
+        ease: "elastic.out(1, 0.5)",
+        onComplete: () => {
+            document.getElementById("final-message").classList.remove("pointer-events-none");
+            document.getElementById("final-message").classList.add("pointer-events-auto");
+        }
+    }, "-=1");  
 }
 
 function resetAnimation() {
     const tl = gsap.timeline();
     
-    // Esconder botão de reset
-    tl.to(resetBtn, {
-        display: "none",
-        opacity: 0,
-        duration: 0.3
-    });
     
     // Remover sangue
     tl.to(bloodOverlay, {
@@ -137,7 +119,7 @@ function resetAnimation() {
     tl.to(finalMessage, {
         opacity: 0,
         scale: 0.5,
-        duration: 0.5
+        duration: 0.1
     }, "<");
     
     // Esconder coração rachado
@@ -149,15 +131,13 @@ function resetAnimation() {
     // Restaurar coração íntegro para estado inicial (invisível)
     tl.set(intactHeart, {
         opacity: 0,
-        scale: 0
-    });
-    
-    // Reativar botão de início
-    tl.to(startBtn, {
+        scale: 0,
         onComplete: () => {
-            startBtn.disabled = false;
-            startBtn.classList.add('pulse');
+            document.getElementById("final-message").classList.remove("pointer-events-auto");
+            document.getElementById("final-message").classList.add("pointer-events-none");
         }
     });
+
 }
-});
+export { startAnimation, resetAnimation }
+window.resetAnimation = resetAnimation;
