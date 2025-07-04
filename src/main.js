@@ -299,7 +299,6 @@ function shuffleArray(array) {
     return array;
 }
 
-// Seleciona uma pergunta aleatória
 function selectRandomQuestion() {
     if (gameState.allQuestions.length === 0) {
         console.error('Não há perguntas disponíveis');
@@ -312,8 +311,14 @@ function selectRandomQuestion() {
     gameState.currentQuestionIndex++;
     gameState.totalQuestions++;
     
+    // Guarda o texto da resposta correta ANTEESSSSSSS de embaralhar
+    const respostaCorretaTexto = gameState.currentQuestion.opcoes[gameState.currentQuestion.respostaCorreta];
+    
     // Embaralha as opções de resposta
     gameState.currentQuestion.opcoes = shuffleArray([...gameState.currentQuestion.opcoes]);
+    
+    // Atualiza o índice da resposta correta após o embaralho
+    gameState.currentQuestion.respostaCorreta = gameState.currentQuestion.opcoes.indexOf(respostaCorretaTexto);
     
     // Atualiza a UI com a pergunta
     displayQuestion();
@@ -405,8 +410,11 @@ function checkAnswer(selectedIndex) {
         optionElements[i].style.pointerEvents = 'none';
     } 
     
-    if (selectedIndex === gameState.currentQuestion.respostaCorreta) {
-        // Resposta correta - adiciona tempo
+    // Obtém o texto das respostas
+    const respostaSelecionada = gameState.currentQuestion.opcoes[selectedIndex];
+    const respostaCorreta = gameState.currentQuestion.opcoes[gameState.currentQuestion.respostaCorreta];
+    
+    if (respostaSelecionada === respostaCorreta) {
         gameState.timer += gameState.timeIncrement;
         gameState.score += 10;
         gameState.correctAnswers++;
@@ -415,9 +423,7 @@ function checkAnswer(selectedIndex) {
         optionElements[selectedIndex].classList.add('correct-answer');
         showTimeChange(gameState.timeIncrement, true);
     } else {
-        // Resposta errada - remove tempo
         gameState.timer -= gameState.timeDecrement;
-        // Garante que o tempo não fique negativo
         if (gameState.timer < 0) gameState.timer = 0;
         
         optionElements[selectedIndex].classList.add('wrong-answer');
@@ -430,12 +436,9 @@ function checkAnswer(selectedIndex) {
             selectRandomQuestion();
             startTimer();
         }, 1500);
-            
     } else {
         anim.startAnimation();
     }
-    // Avança para a próxima pergunta após 1.5 segundos
-    
 }
 
 // Atualiza a UI com o estado atual do jogo
