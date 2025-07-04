@@ -201,7 +201,7 @@ async function startGame() {
 // Carrega as perguntas do GitHub
 async function loadQuestions() {
     try {
-        const response = await fetch('https://raw.githubusercontent.com/arthuru1722/reto-lib/main/quizzes.js');
+        const response = await fetch('https://raw.githubusercontent.com/arthuru1722/reto-lib/main/blackquestions.js');
         const text = await response.text();
         
         // Extrai o objeto quizzes do JavaScript
@@ -333,6 +333,10 @@ function displayQuestion() {
     
     // Adiciona as novas opções (já embaralhadas)
     gameState.currentQuestion.opcoes.forEach((option, index) => {
+        const optionCards = document.querySelectorAll('.option-card');
+        optionCards.forEach(card => {
+            card.classList.remove('answering', 'correct-highlight', 'incorrect-highlight');
+        });
         const optionCard = document.createElement('div');
         optionCard.className = 'slaporra movee option-card flex items-center shadow-stblack border-4 border-black-lp bg-green-lp p-2 h-full md:p-4 lg:min-w-100 md:min-w-80 md:min-h-20 cursor-pointer';
         optionCard.innerHTML = `
@@ -373,6 +377,20 @@ function formatTime(seconds) {
     const s = String(seconds % 60).padStart(2, '0');
     return `${m}:${s}`;
 }
+function showTimeChange(amount, isPositive) {
+  const timerDisplay = document.getElementById('timer');
+  const changeElement = document.createElement('div');
+  
+  changeElement.className = `time-change ${isPositive ? 'positive' : 'negative'}`;
+  changeElement.textContent = `${isPositive ? '+' : '-'}${amount}s`;
+  
+  timerDisplay.appendChild(changeElement);
+  
+  // Remover após animação
+  setTimeout(() => {
+    timerDisplay.removeChild(changeElement);
+  }, 800);
+}
 
 // Verifica a resposta
 function checkAnswer(selectedIndex) {
@@ -382,6 +400,10 @@ function checkAnswer(selectedIndex) {
     clearInterval(gameState.timerInterval);
     
     const optionElements = optionsContainer.children;
+    for (let i = 0; i < optionElements.length; i++) {
+        optionElements[i].classList.add('answering');
+        optionElements[i].style.pointerEvents = 'none';
+    } 
     
     if (selectedIndex === gameState.currentQuestion.respostaCorreta) {
         // Resposta correta - adiciona tempo
@@ -391,6 +413,7 @@ function checkAnswer(selectedIndex) {
         updateGameUI();
         
         optionElements[selectedIndex].classList.add('correct-answer');
+        showTimeChange(gameState.timeIncrement, true);
     } else {
         // Resposta errada - remove tempo
         gameState.timer -= gameState.timeDecrement;
@@ -399,6 +422,7 @@ function checkAnswer(selectedIndex) {
         
         optionElements[selectedIndex].classList.add('wrong-answer');
         optionElements[gameState.currentQuestion.respostaCorreta].classList.add('correct-answer');
+        showTimeChange(gameState.timeDecrement, false);
     }
 
     if (gameState.timer > 0) {
@@ -447,7 +471,7 @@ function updateStats() {
 // Reseta o estado do jogo
 function resetGameState() {
     gameState.score = 0;
-    gameState.timer = 5; // Tempo inicial
+    gameState.timer = 30; // Tempo inicial
     gameState.currentQuestionIndex = 0;
     gameState.totalQuestions = 0;
     gameState.correctAnswers = 0;

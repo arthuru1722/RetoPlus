@@ -161,7 +161,7 @@ function rodarTransicao() {
 
     tl.to(barra, {
         width: "80vw",
-        duration: 2.5,
+        duration: 0.5,
         ease: "power2.out"
     })
     .to(barra, {
@@ -169,7 +169,8 @@ function rodarTransicao() {
         height: "100vh",
         duration: 0.5,
         ease: "power1.inOut"
-    })
+    }, "-=0.2")
+    
     .to(linhas[0], {
         height: "100vh",
         duration: 0.3,
@@ -274,11 +275,6 @@ function tempoEsgotado() {
         ease: "none",
     })
 
-    .to(relogio, {
-        textShadow: "0 0 0px rgba(255,255,255,0)",
-        duration: 1.4
-    })
-
     
     .to(relogio, {
         opacity: 0.2,
@@ -302,6 +298,11 @@ function resetTempoEsgotado(action) {
         opacity: 0,
         duration: 0.5
     }, "<")
+
+    .to(relogio, {
+        textShadow: "0 0 0px rgba(255,255,255,0)",
+        duration: 1.4
+    })
 
     .to(relogio, {
         opacity: 1,

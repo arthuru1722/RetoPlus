@@ -50,29 +50,69 @@
     100% { transform: translate(-1px, -4px);}
 }
 
-.mov {
-    transition: transform 0.6s ease;
-    animation: mov 0.5s ease-in-out infinite;
-}
-
-.mov:nth-child(1) {
-  animation-delay: 0s;
-}
-.mov:nth-child(2) {
-  animation-delay: 0.01s;
-}
-.mov:nth-child(3) {
-  animation-delay: 0.02s;
-}
-.mov:nth-child(4) {
-  animation-delay: 0.1s;
-}
-
 @keyframes movee {
     0% { transform: translate(-1px, -3px);}
     50% { transform: translate(1px, 3px);}
     100% { transform: translate(-1px, -3px);}
 }
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
+
+/* Adicione no style.css */
+.answering {
+  transform: scale(0.95);
+  filter: brightness(0.7);
+  transition: all 0.2s ease;
+}
+
+.correct-highlight {
+  box-shadow: 0 0 15px #48bb78;
+  border-color: #48bb78 !important;
+  color: #333434 !important
+}
+
+.incorrect-highlight {
+  box-shadow: 0 0 15px #e53e3e;
+  border-color: #e53e3e !important;
+  color: #333434 !important
+}
+
+.time-change {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.5rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: floatUp 0.8s forwards;
+}
+
+.time-change.positive {
+  color: #48bb78; /* Verde para ganho de tempo */
+  text-shadow: 0 0 5px rgba(72, 187, 120, 0.5);
+}
+
+.time-change.negative {
+  color: #e53e3e; /* Vermelho para perda de tempo */
+  text-shadow: 0 0 5px rgba(229, 62, 62, 0.5);
+}
+
+.mov {
+    transition: transform 0.6s ease;
+    animation: mov 0.5s ease-in-out infinite;
+}
+.mov:nth-child(1) {animation-delay: 0s;}
+.mov:nth-child(2) {animation-delay: 0.01s;}
+.mov:nth-child(3) {animation-delay: 0.02s;}
+.mov:nth-child(4) {animation-delay: 0.1s;}
 
 .movee {
     transition: transform 0.6s ease;
@@ -83,21 +123,16 @@
     }
 }
 
-.a360 {
-    transition: transform 0.6s ease; /* só pra ficar suave quando entrar/saír */
-}
-
-.a360:hover {
-    animation: girar360 0.9s linear infinite;
-}
-        
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.fade-out {
-    animation: fadeOut 0.5s ease-in-out;
-}
+.option-number {transition: all 0.3s ease;}
+.option-card:hover .option-number {transform: scale(1.2);}
+.a360 {transition: transform 0.6s ease;}
+.a360:hover {animation: girar360 0.9s linear infinite;}       
+.fade-in {animation: fadeIn 0.5s ease-in-out;}
+.fade-out {animation: fadeOut 0.5s ease-in-out;}
+.progress-bar {overflow: hidden;}
+.progress-fill {animation: progress 3s forwards;}
+.heart {color: #e53e3e;}
+.pulse {animation: pulse 2s infinite;}
 
 .screen {
     display: none;
@@ -109,17 +144,6 @@
     overflow: auto;
 }
 
-.progress-bar {
-    overflow: hidden;
-}
-
-.progress-fill {
-    animation: progress 3s forwards;
-}
-
-.heart {
-    color: #e53e3e;
-}
 
 .option-card {
     transition: all 0.3s ease;
@@ -131,27 +155,23 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.pulse {
-    animation: pulse 2s infinite;
-}
+
 
 .correct-answer {
-    background-color: #c6f6d5 !important;
+    background-color: rgb(107, 163, 129) !important;
+    filter: brightness(1) !important;
+    transform: scale(1) !important; 
     border: 2px solid #48bb78;
 }
 
 .wrong-answer {
-    background-color: #fed7d7 !important;
+    background-color: #FF7373 !important;
+    filter: brightness(1) !important;
+    transform: scale(1) !important; 
     border: 2px solid #e53e3e;
 }
 
-.option-number {
-    transition: all 0.3s ease;
-}
 
-.option-card:hover .option-number {
-    transform: scale(1.2);
-}
 
 .disabled {
     pointer-events: none;
