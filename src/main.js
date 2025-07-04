@@ -26,7 +26,7 @@ const statsHighscore = document.getElementById('stats-highscore');
 const statsLastScore = document.getElementById('stats-last-score');
 const statsLastQuestions = document.getElementById('stats-last-questions');
 
-let gameState = {
+export let gameState = {
     currentScreen: 0,
     score: 0,
     timer: 30,
@@ -37,6 +37,9 @@ let gameState = {
     totalQuestions: 0,
     correctAnswers: 0,
     canAnswer: true, // Controlar a interação
+    transitionAnim1: false,
+    dieAnim1: false,
+    dieAnim2: false,
     timeIncrement: 20, 
     timeDecrement: 10,
     allHints: [], 
@@ -50,7 +53,7 @@ let gameState = {
 };  
 
 // Função para mudar de tela
-function changeScreen(screenNumber) {
+export function changeScreen(screenNumber) {
     // Esconde todas as telas
     Object.values(screens).forEach(screen => {
         screen.style.display = 'none';
@@ -74,6 +77,8 @@ function changeScreen(screenNumber) {
     }
 }
 
+
+
 window.changeScreen = changeScreen;
 
 function deathScreen(action) {
@@ -86,6 +91,15 @@ function deathScreen(action) {
         anim.resetAnimation();   
     }
 }
+
+// function TE_Screen(action) {
+//     document.querySelectorAll("TE_BTN").disabled = true;
+//     if (action === 0) {
+//         anim.resetTempoEsgotado(0);        
+//     } else if (action === 1) {                
+//         anim.resetTempoEsgotado(1);   
+//     }
+// }
 
 window.deathScreen = deathScreen;
 
@@ -170,7 +184,18 @@ async function startGame() {
     selectRandomQuestion();
     
     // Inicia o timer
-    startTimer();
+    if (gameState.transitionAnim1 || gameState.dieAnim2) {
+        startTimer();
+    }else if (gameState.dieAnim1) {
+        setTimeout(() => {
+            startTimer();
+        }, 2500); 
+    } else return startTimer();
+
+    gameState.transitionAnim1 = false;
+    gameState.dieAnim1 = false;
+    gameState.dieAnim2 = false;
+    
 }
 
 // Carrega as perguntas do GitHub
@@ -309,13 +334,13 @@ function displayQuestion() {
     // Adiciona as novas opções (já embaralhadas)
     gameState.currentQuestion.opcoes.forEach((option, index) => {
         const optionCard = document.createElement('div');
-        optionCard.className = 'option-card flex items-center shadow-stblack border-2 border-black-lp bg-green-lp p-2 md:p-4 lg:min-w-100 md:min-w-80 md:min-h-20 cursor-pointer';
+        optionCard.className = 'slaporra movee option-card flex items-center shadow-stblack border-4 border-black-lp bg-green-lp p-2 h-full md:p-4 lg:min-w-100 md:min-w-80 md:min-h-20 cursor-pointer';
         optionCard.innerHTML = `
             <div class="flex items-center justify-center w-full">
                 <!-- <div class="option-number w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3">
                     ${index + 1}
                 </div> -->
-                <div class="text-beige-lp font-poppins font-bold text-md md:text-2xl">${option}</div>
+                <div class="text-beige-lp font-poppins font-bold text-xl md:text-2xl ">${option}</div>
             </div>
         `;
         
@@ -330,19 +355,23 @@ function displayQuestion() {
 // Inicia o timer
 function startTimer() {
     clearInterval(gameState.timerInterval);
-    timerDisplay.textContent = `${gameState.timer}s`;
+    timerDisplay.textContent = formatTime(gameState.timer);
     
     gameState.timerInterval = setInterval(() => {
         gameState.timer--;
-        timerDisplay.textContent = `${gameState.timer}s`;
+        timerDisplay.textContent = formatTime(gameState.timer);
         
         if (gameState.timer <= 0) {
-            // Tempo esgotado - fim de jogo
             clearInterval(gameState.timerInterval);
-            anim.startAnimation();
+            anim.tempoEsgotado();
             gameState.canAnswer = false;
         }
     }, 1000);
+}
+function formatTime(seconds) {
+    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    return `${m}:${s}`;
 }
 
 // Verifica a resposta
@@ -371,16 +400,18 @@ function checkAnswer(selectedIndex) {
         optionElements[selectedIndex].classList.add('wrong-answer');
         optionElements[gameState.currentQuestion.respostaCorreta].classList.add('correct-answer');
     }
-    
-    // Avança para a próxima pergunta após 1.5 segundos
-    setTimeout(() => {
-        if (gameState.timer > 0) {
+
+    if (gameState.timer > 0) {
+        setTimeout(() => {
             selectRandomQuestion();
             startTimer();
-        } else {
-            changeScreen(2);
-        }
-    }, 1500);
+        }, 1500);
+            
+    } else {
+        anim.startAnimation();
+    }
+    // Avança para a próxima pergunta após 1.5 segundos
+    
 }
 
 // Atualiza a UI com o estado atual do jogo
@@ -416,7 +447,7 @@ function updateStats() {
 // Reseta o estado do jogo
 function resetGameState() {
     gameState.score = 0;
-    gameState.timer = 30; // Tempo inicial
+    gameState.timer = 5; // Tempo inicial
     gameState.currentQuestionIndex = 0;
     gameState.totalQuestions = 0;
     gameState.correctAnswers = 0;

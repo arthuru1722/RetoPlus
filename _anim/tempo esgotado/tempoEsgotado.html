@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Relógio Alarmando em Loop Manual</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      height: 100vh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .fundo {
+      position: fixed;
+      inset: 0;
+      background-color: transparent;
+      z-index: 0;
+      
+    }
+
+    .relogio-wrapper {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      display: none;
+    }
+
+    .icone {
+      font-size: 100px;
+      color: #222;
+      text-shadow: 0 0 0px rgba(255,255,255,0);
+    }
+
+    .botao {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 18px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 20;
+      transition: background 0.3s;
+    }
+
+    .botao:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="fundo" id="fundo"></div>
+
+  <button class="botao" id="startBtn">Começar</button>
+
+  <div class="relogio-wrapper" id="relogioWrapper">
+    <i class="fa-solid fa-stopwatch icone" id="relogio"></i>
+  </div>
+
+  <audio id="alarme" src="./clock-91492.mp3"></audio>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const audio = document.getElementById("alarme");
+    const fundo = document.getElementById("fundo");
+    const relogio = document.getElementById("relogio");
+    const relogioWrapper = document.getElementById("relogioWrapper");
+    const startBtn = document.getElementById("startBtn");
+
+    startBtn.addEventListener("click", () => {
+      startBtn.style.display = "none";
+
+      // Primeiro, mostra o relógio manualmente
+      relogioWrapper.style.display = "block";
+
+      // Agora sim reseta a parada sem apagar o display
+      gsap.set(relogioWrapper, {
+        scale: 1,
+        opacity: 1
+      });
+
+      gsap.set(relogio, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotation: 0,
+        textShadow: "0 0 0px rgba(255,255,255,0)"
+      });
+
+      gsap.set(fundo, {
+        background: "transparent"
+      });
+
+      // timeline fudida
+      const tl = gsap.timeline();
+
+      tl.from(relogioWrapper, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.4,
+        ease: "back.out(2)"
+      })
+
+      .to(fundo, {
+        background: "radial-gradient(circle, #111, #000, #000)",
+        duration: 1
+      }, "<")
+
+      .to(relogio, {
+        textShadow: "0 0 50px rgba(220,220,220,0.7)",
+        duration: 0.4
+      }, "<")
+
+      .add(() => {
+        audio.currentTime = 0; // reset se quiser repetir depois
+        audio.play();
+      }, "+=0.1")
+
+      .to(relogio, {
+        keyframes: [
+          { rotation: 20 },
+          { rotation: 0 },
+          { rotation: -20 },
+          { rotation: 0 },
+  
+        ],
+        repeat: 1,
+        duration: 1,
+        ease: "none",
+      })
+
+      //.to(relogio, {
+      //  scale: 0.8,
+      //  duration: 2.6
+      //}, "-=2.4")
+
+      .to(relogio, {
+        textShadow: "0 0 0px rgba(255,255,255,0)",
+        duration: 1.4
+      })
+
+      .to(relogio, {
+          scale: 0.5,  
+          duration: 0.6,
+          ease: "power4.inOut",
+      }, "-=0.8")
+
+      
+
+      .to(relogio, {
+          scale: 300.75,  
+          duration: 0.5,
+          ease: "none",
+      }, "-=0.1")
+
+      .to(fundo, {
+        background: "transparent",
+        duration: 0.5,
+        onComplete: () => {
+          console.log('screen-1')
+        }
+      }, "-=0.5")
+
+      .to(relogioWrapper, {
+        opacity: 0,
+        duration: 0.4,
+        onComplete: () => {
+          relogioWrapper.style.display = "none";
+          startBtn.style.display = "block";
+        }
+      });
+    });
+
+  </script>
+
+</body>
+</html>

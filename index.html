@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alata&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alata&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
     <!--script-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script type="module" src="./src/animations/anim.js"></script>
@@ -19,23 +19,23 @@
 <body class="font-sans bg-gray-100">
     <!-- Tela Inicial (0) -->
     <div id="screen-0" class="screen flex items-center justify-center bg-green-lp">
-        <div class="text-center flex flex-col items-center justify-center mx-4">
-            <div class="p-2 w-140 h-48 mx-auto mb-8 flex items-center justify-center">
-                <div class="w-200 h-32 flex items-center justify-center">
+        <div class="text-center flex flex-col items-center justify-center">
+            <div class="mov max-w-140 mx-auto mb-8 flex items-center justify-center">
+                <div class="w-[100vw] hover:scale-105 a360 h-32 flex items-center justify-center -translate-y-1/1">
                     <img src="./assets/images/reto-logo.webp" alt="Retorica+">
                 </div>
             </div>
             
             <div class="space-y-4 max-w-[80vw] sm:max-w-md">
-                <button onclick="changeScreen('loading')" class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                <button onclick="rodarTransicao()" class="mov a360 w-full bg-beige-lp border-black-lp border-3 text-black-lp font-bold py-3 text-4xl transition-all transform shadow-stblack font-poppins hover:scale-105">
                     JOGAR
                 </button>
                 
-                <button onclick="changeScreen(3)" class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                <button onclick="changeScreen(3)" class="mov a360 w-full bg-beige-lp border-black-lp border-3 text-black-lp font-bold py-3 text-4xl transition-all transform shadow-stblack font-poppins hover:scale-105">
                     ESTATÍSTICAS
                 </button>
                 
-                <button class="w-full bg-beige-lp border-black-lp border-3 text-primary font-bold py-4 px-8 text-3xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-stblack font-poppins">
+                <button class="mov a360 w-full bg-beige-lp border-black-lp border-3 text-black-lp font-bold py-3 text-4xl transition-all transform shadow-stblack font-poppins hover:scale-105">
                     LITERATURA
                 </button>
             </div>
@@ -45,11 +45,11 @@
     <!-- Tela de Loading -->
     <div id="loading-screen" class="screen flex flex-col items-center justify-center bg-green-lp">
         <div class="h-full text-center flex flex-col p-10 items-center justify-center w-full max-w-full">
-            <div class="bg-darkgreen-lp shadow-stblack flex items-center justify-center border-black-lp border-6 lg:w-2xl w-full md:h-60 rounded-2xl p-8">
+            <div class=" bg-darkgreen-lp shadow-stblack flex items-center justify-center border-black-lp border-6 lg:w-2xl w-full md:h-60 rounded-2xl p-8">
                 <p id="hint-text" class="text-beige-lp text-xl lg:text-3xl font-alata text-center">Algo deu Errado aqui....</p>
             </div>
         </div>
-        <div class="h-8 mb-20 flex flex-col items-center justify-center w-[95%] max-w-full">
+        <div class=" h-8 mb-20 flex flex-col items-center justify-center w-[95%] max-w-full">
           <div id="progress-bar" class="progress-bar rounded-full h-16 w-full bg-black-lp">
               <div class="progress-fill h-full bg-beige-lp"></div>
           </div>
@@ -60,42 +60,42 @@
 
     <!-- Tela de Jogo (1) -->
     <div id="screen-1" class="screen p-10 md:p-25 flex justify-center bg-beige-st">
-        <div class="game-container w-full gap-2 md:gap-10 max-w-[1500px] justify-between items-center flex flex-col md:flex-row">
+        <div class="game-container w-full gap-8 md:gap-10 max-w-[1500px] justify-between items-center flex flex-col md:flex-row">
             <!-- Painel Esquerdo -->
             <div class="flex flex-col w-5/5 max-w-170">
                 <!-- Janela de Pergunta -->
-                <div class="bg-green-lp text-beige-lp p-2 md:p-6 lg:min-h-45 shadow-stblack border-2 border-black-lp mb-4">
+                <div class="movee bg-green-lp text-beige-lp p-2 md:p-6 lg:min-h-45 shadow-stblack border-4 border-black-lp mb-4">
                     <h2 class="text-base font-alata mb-2 w-full text-center">Pergunta</h2>
                     <p id="question-text" class="text-xl lg:text-2xl h-full text-center font-bold font-poppins">Carregando pergunta...</p>
                 </div>
                 
                 <!-- Três Janelas -->
                 <div class="grid grid-cols-[3fr_3fr_0fr] gap-3 mb-4">
-                    <div class="bg-red-st h-full border-2 border-black-lp text-center">
+                    <div class="movee bg-red-st h-full border-4 border-black-lp text-center">
                         <h3 class="font-bold text-sm font-poppins text-beige-lp">TEMPO:</h3>
                         <div id="timer" class="text-3xl font-alata text-beige-lp">00:30</div>
                     </div>
                     
-                    <div class="bg-beige-lp h-full border-2 border-black-lp text-center">
+                    <div class="movee bg-beige-lp h-full border-4 border-black-lp text-center">
                         <h3 class="font-bold font-poppins text-sm text-black-lp">PONTUAÇÃO:</h3>
                         <div id="score" class="text-3xl font-alata  text-black-lp">0</div>
                     </div>
                     
-                    <div class="bg-brown-lp text-2xl h-full border-2 border-black-lp flex justify-center items-center">
+                    <div class="movee bg-brown-lp text-2xl h-full border-4 border-black-lp flex justify-center items-center">
                         <i class="fa-solid fa-hippo m-3"></i>
                         <!-- não sei ao certo oq é isso -->
                     </div>
                 </div>
                 
                 <!-- Quadrado Branco Vazio -->
-                <div class="bg-beige-lp flex-grow h-30 md:h-70 shadow-stblack border-2 border-black-lp">
+                <div class="movee bg-beige-lp flex-grow h-30 md:h-70 shadow-stblack border-4 border-black-lp">
 
                 </div>
             </div>
             
             <!-- Painel Direito (Opções) -->
-            <div class="flex flex-col w-full md:w-auto">
-                <div id="options-container" class="flex flex-col gap-4 md:gap-10 flex-grow">
+            <div class="flex flex-col w-full h-full md:h-auto md:w-auto">
+                <div id="options-container" class="flex flex-col h-max gap-4 md:gap-10 flex-grow">
                     <!-- As opções são inseridas aqui pelo JavaScript -->
                 </div>
             </div>
@@ -157,8 +157,9 @@
             </button>
         </div>
     </div>
-    <div class="heart-container fixed w-screen h-screen top-0 left-0 flex flex-col pointer-events-none">        
-        <div class="hearts-container h-screen w-screen flex justify-center items-center">
+    <!-- animação de morte -->
+    <div class="heart-container fixed w-screen h-screen top-0 left-0 flex justify-center items-center flex-col pointer-events-none">        
+        <div class="hearts-container flex justify-center items-center">
             <i id="intact-heart" class="heart-icon fa-solid fa-heart"></i>
             <i id="cracked-heart" class="heart-icon fa-solid fa-heart-crack"></i>
         </div>
@@ -166,23 +167,53 @@
         <div id="impact-frame"></div>
         <div id="blood-overlay"></div>                            
         
-        <div id="final-message" class="final-message w-full pointer-events-none">              
-            <div class="text-center gap-20 h-screen w-screen mx-4 flex flex-col justify-center items-center">
+        <div id="final-message" class="final-message w-full h-full absolute justify-center items-center pointer-events-none">              
+            <div class="text-center gap-20 h-screen w-screen flex flex-col justify-center items-center">
                 <div class="pt-20">
-                    <h1 class="text-8xl font-bold text-beige-lp  border-b-3">FIM DE JOGO</h1>
-                    <p class="text-beige-lp text-xl mb-4">SEU TEMPO ACABOU :/</p>
+                    <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-beige-lp border-b-3">FIM DE JOGO</h1>
+                    <p class="text-sm sm:text-base md:text-lg lg:text-xl text-beige-lp mb-4">SEU TEMPO ACABOU :/</p>
                 </div>
                 <div class="flex flex-col gap-4">
-                    <button onclick="deathScreen(0)" class="deathBTN text-beige-lp font-alata text-2xl hover:scale-105 transition-all">
+                    <button onclick="deathScreen(0)" class="deathBTN text-beige-lp font-alata text-xl sm:text-2xl hover:scale-105 transition-all">
                         <i class="fas fa-home mr-2"></i>Menu Principal
                     </button>
-                    <button onclick="deathScreen(1)" class="deathBTN text-[#e74c3c] py-2 px-5 hover:scale-105 rounded-2xl w-fit bg-beige-lp font-alata text-2xl transition-all">
+                    <button onclick="deathScreen(1)" class="deathBTN text-[#e74c3c] py-2 px-5 hover:scale-105 rounded-2xl w-fit bg-beige-lp font-alata text-xl sm:text-2xl transition-all">
                         <i class="fa-solid fa-arrows-rotate mr-2"></i>Jogar novamente
                     </button>                           
                 </div>
             </div>
         </div>
     </div>
+    <!-- animação de transição 1 -->
+     <div id="transicao">
+        <div id="barra"></div>
+        <div class="linha linha1"></div>
+        <div class="linha linha2"></div>
+        <div class="linha linha3"></div>
+    </div>
+
+    <!-- animação tempo esgotado -->
+    <div class="fundo z-300 pointer-events-none" id="fundo">
+        <div id="TE_content" class="pointer-events-auto text-center gap-20 h-screen w-screen flex flex-col justify-center items-center">
+            <div class="pt-20">
+                <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-beige-lp border-b-3">FIM DE JOGO</h1>
+                <p class="text-sm sm:text-base md:text-lg lg:text-xl text-beige-lp mb-4">SEU TEMPO ACABOU :/</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <button onclick="resetTempoEsgotado(0)" class="TE_BTN text-beige-lp z-300 font-alata text-xl sm:text-2xl hover:scale-105 transition-all">
+                    <i class="fas fa-home mr-2"></i>Menu Principal
+                </button>
+                <button onclick="resetTempoEsgotado(1)" class="TE_BTN text-[#e74c3c] py-2 px-5 hover:scale-105 rounded-2xl w-fit bg-beige-lp z-300 font-alata text-xl sm:text-2xl transition-all">
+                    <i class="fa-solid fa-arrows-rotate mr-2"></i>Jogar novamente
+                </button>                           
+            </div>
+        </div>
+    </div>
+    <div class="relogio-wrapper" id="relogioWrapper">
+        <i class="fa-solid fa-stopwatch icone" id="relogio"></i>
+    </div>
+    <audio id="alarme" src="./assets/sounds/clock-91492.mp3"></audio>
+
     <script type="module" src="./src/main.js"></script>
 </body>
 </html>

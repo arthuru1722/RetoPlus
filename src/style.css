@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-    --breakpoint-z: 0rem;
     --breakpoint-zl: 360px;
     --color-beige-lp: oklch(0.92 0.0353 72.88);
     --color-beige-st: oklch(0.832 0.0894 61.13);
@@ -37,6 +36,59 @@
 @keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+@keyframes girar360 {
+  0% { transform: rotate(1deg); }
+  50% { transform: rotate(-1deg); }
+  100% { transform: rotate(1deg); }
+}
+
+@keyframes mov {
+    0% { transform: translate(-1px, -4px);}
+    50% { transform: translate(1px, 4px);}
+    100% { transform: translate(-1px, -4px);}
+}
+
+.mov {
+    transition: transform 0.6s ease;
+    animation: mov 0.5s ease-in-out infinite;
+}
+
+.mov:nth-child(1) {
+  animation-delay: 0s;
+}
+.mov:nth-child(2) {
+  animation-delay: 0.01s;
+}
+.mov:nth-child(3) {
+  animation-delay: 0.02s;
+}
+.mov:nth-child(4) {
+  animation-delay: 0.1s;
+}
+
+@keyframes movee {
+    0% { transform: translate(-1px, -3px);}
+    50% { transform: translate(1px, 3px);}
+    100% { transform: translate(-1px, -3px);}
+}
+
+.movee {
+    transition: transform 0.6s ease;
+    animation: movee 1.5s ease-in-out infinite;
+    &:hover {
+        animation-play-state: paused;
+        z-index: 2;
+    }
+}
+
+.a360 {
+    transition: transform 0.6s ease; /* só pra ficar suave quando entrar/saír */
+}
+
+.a360:hover {
+    animation: girar360 0.9s linear infinite;
 }
         
 .fade-in {
@@ -74,7 +126,7 @@
     cursor: pointer;
 }
 
-.option-card:hover {
+.slaporra:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
