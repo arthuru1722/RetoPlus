@@ -135,7 +135,7 @@ function resetAnimation() {
     // Restaurar coração íntegro para estado inicial (invisível)
     tl.set(intactHeart, {
         opacity: 0,
-        scale: 0,
+        scale: 1,
         onComplete: () => {
             document.getElementById("final-message").classList.remove("pointer-events-auto");
             document.getElementById("final-message").classList.add("pointer-events-none");

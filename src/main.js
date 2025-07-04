@@ -30,6 +30,7 @@ export let gameState = {
     currentScreen: 0,
     score: 0,
     timer: 30,
+    maxTime: 120,
     timerInterval: null,
     currentQuestion: null,
     allQuestions: [],
@@ -377,6 +378,7 @@ function startTimer() {
         }
     }, 1000);
 }
+
 function formatTime(seconds) {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
     const s = String(seconds % 60).padStart(2, '0');
@@ -386,15 +388,17 @@ function showTimeChange(amount, isPositive) {
   const timerDisplay = document.getElementById('timer');
   const changeElement = document.createElement('div');
   
-  changeElement.className = `time-change ${isPositive ? 'positive' : 'negative'}`;
-  changeElement.textContent = `${isPositive ? '+' : '-'}${amount}s`;
+  // Classes Tailwind para posicionamento e animação
+  changeElement.className = `h-0 -translate-y-15 text-center font-bold text-xl ${
+    isPositive ? 'text-green-500' : 'text-red-500'
+  } animate-float-up`;
   
+  changeElement.textContent = `${isPositive ? '+' : '-'}${amount}s`;
   timerDisplay.appendChild(changeElement);
   
-  // Remover após animação
   setTimeout(() => {
     timerDisplay.removeChild(changeElement);
-  }, 800);
+  }, 1500);
 }
 
 // Verifica a resposta
