@@ -277,7 +277,7 @@ function tempoEsgotado() {
 
     
     .to(relogio, {
-        opacity: 0.2,
+        opacity: 0,
         duration: 1.4,
         onComplete: () => {
             TE_content.style.display = "flex"
@@ -300,14 +300,14 @@ function resetTempoEsgotado(action) {
     }, "<")
 
     .to(relogio, {
-        textShadow: "0 0 0px rgba(255,255,255,0)",
-        duration: 1.4
-    })
-
-    .to(relogio, {
         opacity: 1,
         duration: 0.4,
     })
+
+    .to(relogio, {
+        textShadow: "0 0 0px rgba(255,255,255,0)",
+        duration: 1.4
+    }, "-=0.7")   
 
     .to(relogio, {
         scale: 0.5,  
@@ -320,7 +320,7 @@ function resetTempoEsgotado(action) {
                 main.changeScreen(1);
             }
         }
-    }, "-=0.2")
+    }, "-=1")
 
     .to(relogio, {
         scale: 300.75,  

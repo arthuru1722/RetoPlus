@@ -93,15 +93,6 @@ function deathScreen(action) {
     }
 }
 
-// function TE_Screen(action) {
-//     document.querySelectorAll("TE_BTN").disabled = true;
-//     if (action === 0) {
-//         anim.resetTempoEsgotado(0);        
-//     } else if (action === 1) {                
-//         anim.resetTempoEsgotado(1);   
-//     }
-// }
-
 window.deathScreen = deathScreen;
 
 // Tela de loading
@@ -366,8 +357,8 @@ function displayQuestion() {
 function startTimer() {
     clearInterval(gameState.timerInterval);
     timerDisplay.textContent = formatTime(gameState.timer);
-    
     gameState.timerInterval = setInterval(() => {
+        console.log("a")
         gameState.timer--;
         timerDisplay.textContent = formatTime(gameState.timer);
         
@@ -419,13 +410,20 @@ function checkAnswer(selectedIndex) {
     const respostaCorreta = gameState.currentQuestion.opcoes[gameState.currentQuestion.respostaCorreta];
     
     if (respostaSelecionada === respostaCorreta) {
-        gameState.timer += gameState.timeIncrement;
+        const tempoAtual = gameState.timer;
+        const tempoPossivel = gameState.maxTime - tempoAtual;
+        const incrementoReal = Math.min(gameState.timeIncrement, tempoPossivel);
+
+        gameState.timer += incrementoReal;
         gameState.score += 10;
         gameState.correctAnswers++;
         updateGameUI();
         
         optionElements[selectedIndex].classList.add('correct-answer');
-        showTimeChange(gameState.timeIncrement, true);
+
+        if (incrementoReal > 0) {
+            showTimeChange(incrementoReal, true);
+        }
     } else {
         gameState.timer -= gameState.timeDecrement;
         if (gameState.timer < 0) gameState.timer = 0;
