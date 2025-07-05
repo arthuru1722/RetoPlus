@@ -3,10 +3,8 @@ import * as anim from './animations/anim.js'
 // Elementos DOM
 const screens = {
     0: document.getElementById('screen-0'),
-    'loading': document.getElementById('loading-screen'),
     1: document.getElementById('screen-1'),
-    2: document.getElementById('screen-2'),
-    3: document.getElementById('screen-3')
+    2: document.getElementById('screen-2')
 };
 
 const progressBar = document.getElementById('progress-bar');
@@ -26,6 +24,23 @@ const statsHighscore = document.getElementById('stats-highscore');
 const statsLastScore = document.getElementById('stats-last-score');
 const statsLastQuestions = document.getElementById('stats-last-questions');
 
+//debug
+window.exportGameData = function() {
+    const sessions = JSON.parse(localStorage.getItem('gameSessions')) || [];
+    const dataStr = JSON.stringify(sessions, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `retorica-data-${new Date().toISOString()}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+};
+window.deathScreen = deathScreen;
+window.changeScreen = changeScreen;
+
+//states
 export let gameState = {
     currentScreen: 0,
     score: 0,
@@ -33,14 +48,17 @@ export let gameState = {
     maxTime: 120,
     timerInterval: null,
     currentQuestion: null,
+    currentSession: null,
     allQuestions: [],
     currentQuestionIndex: 0,
+    refreshAttempts: 0,
     totalQuestions: 0,
     correctAnswers: 0,
     canAnswer: true, // Controlar a interação
     transitionAnim1: false,
     dieAnim1: false,
     dieAnim2: false,
+    Ingame: false,
     timeIncrement: 20, 
     timeDecrement: 10,
     allHints: [], 
@@ -51,7 +69,74 @@ export let gameState = {
         lastScore: 0,
         lastQuestions: 0
     }
-};  
+};
+//sla achei bom separar
+
+window.addEventListener("beforeunload", function (e) {
+    if (gameState.Ingame) {
+        if (gameState.refreshAttempts === 0) {
+            e.preventDefault();
+            e.returnValue = ''; // Obrigatório pra alguns navegadores
+            gameState.refreshAttempts += 1
+        } else if (gameState.refreshAttempts >= 1) {
+            location.reload();
+        }
+    }
+    
+});
+
+function startNewSession() {
+    gameState.currentSession = {
+        id: Date.now(),
+        startTime: new Date().toISOString(),
+        events: [],
+        score: 0,
+        completed: false
+    };
+}
+
+function recordEvent(event) {
+    if (gameState.currentSession) {
+        gameState.currentSession.events.push({
+            timestamp: new Date().toISOString(),
+            ...event
+        });
+    }
+}
+
+function saveCompletedSession() {
+    if (!gameState.currentSession) return;
+
+    gameState.currentSession.endTime = new Date().toISOString();
+    gameState.currentSession.completed = true;
+    gameState.currentSession.score = gameState.score;
+
+    const sessions = JSON.parse(localStorage.getItem('gameSessions')) || [];
+    sessions.push(gameState.currentSession);
+    
+    // Verifica o tamanho aproximado (em bytes)
+    const sessionsSize = JSON.stringify(sessions).length;
+    
+    // Limite recomendado do localStorage (5MB - com margem de segurança)
+    const MAX_STORAGE_SIZE = 4 * 1024 * 1024; // 4MB
+    
+    if (sessionsSize > MAX_STORAGE_SIZE) {
+        // Remove as sessões mais antigas até ficar abaixo do limite
+        while (sessions.length > 1 && JSON.stringify(sessions).length > MAX_STORAGE_SIZE) {
+            sessions.shift(); // Remove a sessão mais antiga
+        }
+        
+        console.warn(`Armazenamento cheio - Sessões antigas foram removidas. Restam ${sessions.length} sessões.`);
+    }
+    
+    localStorage.setItem('gameSessions', JSON.stringify(sessions));
+}
+
+function endGame() {
+    saveCompletedSession();
+    gameState.canAnswer = false;
+    gameState.Ingame = false;
+}
 
 // Função para mudar de tela
 export function changeScreen(screenNumber) {
@@ -65,22 +150,12 @@ export function changeScreen(screenNumber) {
     // screens[screenNumber].classList.add('fade-in');
     
     // Ações específicas para cada tela
-    if (screenNumber === 'loading') {
-        startLoadingScreen();
-    } else if (screenNumber === 1) {
+    if (screenNumber === 1) {
         startGame();
     } else if (screenNumber === 2) {
-        finalScoreDisplay.textContent = gameState.score;
-        totalQuestionsDisplay.textContent = gameState.totalQuestions;
-        updateStats();
-    } else if (screenNumber === 3) {
         updateStats();
     }
 }
-
-
-
-window.changeScreen = changeScreen;
 
 function deathScreen(action) {
     document.querySelectorAll("deathBTN").disabled = true;
@@ -93,7 +168,7 @@ function deathScreen(action) {
     }
 }
 
-window.deathScreen = deathScreen;
+
 
 // Tela de loading
 async function startLoadingScreen() {
@@ -166,7 +241,9 @@ function showRandomHint() {
 
 // Inicia o jogo
 async function startGame() {
+    gameState.Ingame = true;
     resetGameState();
+    startNewSession();
     updateGameUI();
     
     // Carrega as perguntas
@@ -210,75 +287,6 @@ async function loadQuestions() {
         console.log(`Carregadas ${gameState.allQuestions.length} perguntas`);
     } catch (error) {
         console.error('Erro ao carregar perguntas:', error);
-        // Perguntas de fallback
-        gameState.allQuestions = [
-            {
-                id: 1,
-                pergunta: "Qual é o nome completo de Peter Pan?",
-                opcoes: [
-                    "Peter James Pan",
-                    "Peter Michael Pan",
-                    "Peter Banning",
-                    "Peter nunca revela seu sobrenome"
-                ],
-                respostaCorreta: 3
-            },
-            {
-                id: 2,
-                pergunta: "Quem é o autor de Peter Pan?",
-                opcoes: [
-                    "J.K. Rowling",
-                    "J.R.R. Tolkien",
-                    "J.M. Barrie",
-                    "C.S. Lewis"
-                ],
-                respostaCorreta: 2
-            },
-            {
-                id: 3,
-                pergunta: "Qual é o nome da ilha onde Peter Pan vive?",
-                opcoes: [
-                    "Ilha do Tesouro",
-                    "Ilha dos Sonhos",
-                    "Terra do Nunca",
-                    "Ilha da Magia"
-                ],
-                respostaCorreta: 2
-            },
-            {
-                id: 4,
-                pergunta: "Qual é o nome da fada que acompanha Peter Pan?",
-                opcoes: [
-                    "Fada Azul",
-                    "Sininho",
-                    "Fada Morgana",
-                    "Fada Madrinha"
-                ],
-                respostaCorreta: 1
-            },
-            {
-                id: 5,
-                pergunta: "Qual é o principal inimigo de Peter Pan?",
-                opcoes: [
-                    "Capitão Gancho",
-                    "Smee",
-                    "Crocodilo",
-                    "Sr. Smee"
-                ],
-                respostaCorreta: 0
-            },
-            {
-                id: 6,
-                pergunta: "Qual é o nome dos meninos perdidos?",
-                opcoes: [
-                    "João, Miguel e Pedro",
-                    "Eles não têm nomes",
-                    "Cada um tem um nome único",
-                    "São chamados pelos números"
-                ],
-                respostaCorreta: 2
-            }
-        ];
     }
 }
 
@@ -293,26 +301,18 @@ function shuffleArray(array) {
 
 function selectRandomQuestion() {
     if (gameState.allQuestions.length === 0) {
-        console.error('Não há perguntas disponíveis');
+        console.error('Algo deu errado: Não há perguntas disponíveis');
         return;
     }
     
-    // Seleciona uma pergunta aleatória
     const randomIndex = Math.floor(Math.random() * gameState.allQuestions.length);
     gameState.currentQuestion = gameState.allQuestions[randomIndex];
     gameState.currentQuestionIndex++;
     gameState.totalQuestions++;
-    
-    // Guarda o texto da resposta correta ANTEESSSSSSS de embaralhar
     const respostaCorretaTexto = gameState.currentQuestion.opcoes[gameState.currentQuestion.respostaCorreta];
-    
-    // Embaralha as opções de resposta
     gameState.currentQuestion.opcoes = shuffleArray([...gameState.currentQuestion.opcoes]);
-    
-    // Atualiza o índice da resposta correta após o embaralho
     gameState.currentQuestion.respostaCorreta = gameState.currentQuestion.opcoes.indexOf(respostaCorretaTexto);
     
-    // Atualiza a UI com a pergunta
     displayQuestion();
 }
 
@@ -335,7 +335,7 @@ function displayQuestion() {
             card.classList.remove('answering', 'correct-highlight', 'incorrect-highlight');
         });
         const optionCard = document.createElement('div');
-        optionCard.className = 'slaporra movee option-card flex items-center shadow-stblack border-4 border-black-lp bg-green-lp p-2 h-full md:p-4 lg:min-w-100 md:min-w-80 md:min-h-20 cursor-pointer';
+        optionCard.className = 'slaporra movee option-card flex items-center shadow-stblack border-4 border-black-lp bg-green-lp p-2 h-full md:px-4 md:py-2 lg:min-w-100 md:min-w-80 cursor-pointer';
         optionCard.innerHTML = `
             <div class="flex items-center justify-center w-full">
                 <!-- <div class="option-number w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3">
@@ -365,7 +365,7 @@ function startTimer() {
         if (gameState.timer <= 0) {
             clearInterval(gameState.timerInterval);
             anim.tempoEsgotado();
-            gameState.canAnswer = false;
+            endGame();
         }
     }, 1000);
 }
@@ -408,6 +408,16 @@ function checkAnswer(selectedIndex) {
     // Obtém o texto das respostas
     const respostaSelecionada = gameState.currentQuestion.opcoes[selectedIndex];
     const respostaCorreta = gameState.currentQuestion.opcoes[gameState.currentQuestion.respostaCorreta];
+
+    recordEvent({
+        type: 'answer',
+        questionId: gameState.currentQuestion.id,
+        questionText: gameState.currentQuestion.pergunta,
+        options: [...gameState.currentQuestion.opcoes],
+        selectedOption: selectedIndex,
+        correctOption: gameState.currentQuestion.respostaCorreta,
+        isCorrect: respostaSelecionada === respostaCorreta
+    });
     
     if (respostaSelecionada === respostaCorreta) {
         const tempoAtual = gameState.timer;
@@ -440,6 +450,7 @@ function checkAnswer(selectedIndex) {
         }, 1500);
     } else {
         anim.startAnimation();
+        endGame()
     }
 }
 
@@ -450,27 +461,46 @@ function updateGameUI() {
 
 // Atualiza as estatísticas
 function updateStats() {
-    // Atualiza estatísticas globais
-    gameState.stats.totalQuestions += gameState.totalQuestions;
-    gameState.stats.correctAnswers += gameState.correctAnswers;
-    gameState.stats.lastScore = gameState.score;
-    gameState.stats.lastQuestions = gameState.totalQuestions;
-    
-    if (gameState.score > gameState.stats.highScore) {
-        gameState.stats.highScore = gameState.score;
+    const sessions = JSON.parse(localStorage.getItem('gameSessions')) || [];
+    const completedSessions = sessions.filter(s => s.completed);
+
+    // Calcular estatísticas
+    let totalQuestions = 0;
+    let correctAnswers = 0;
+    let highScore = 0;
+    let lastScore = 0;
+    let lastQuestions = 0;
+
+    if (completedSessions.length > 0) {
+        // Última sessão
+        const lastSession = completedSessions[completedSessions.length - 1];
+        lastScore = lastSession.score;
+        lastQuestions = lastSession.events.filter(e => e.type === 'answer').length;
+
+        // Todas as sessões
+        completedSessions.forEach(session => {
+            // Contar perguntas e acertos
+            const sessionAnswers = session.events.filter(e => e.type === 'answer');
+            totalQuestions += sessionAnswers.length;
+            correctAnswers += sessionAnswers.filter(a => a.isCorrect).length;
+            
+            // Pontuação máxima
+            if (session.score > highScore) {
+                highScore = session.score;
+            }
+        });
     }
-    
-    // Calcula a taxa de acertos
-    const accuracy = gameState.stats.totalQuestions > 0 
-        ? Math.round((gameState.stats.correctAnswers / gameState.stats.totalQuestions) * 100)
-        : 0;
-    
-    // Atualiza a UI de estatísticas
-    statsQuestions.textContent = gameState.stats.totalQuestions;
+
+    // Calcular taxa de acertos
+    const accuracy = totalQuestions > 0 ? 
+        Math.round((correctAnswers / totalQuestions) * 100) : 0;
+
+    // Atualizar UI
+    statsQuestions.textContent = totalQuestions;
     statsAccuracy.textContent = `${accuracy}%`;
-    statsHighscore.textContent = gameState.stats.highScore;
-    statsLastScore.textContent = gameState.stats.lastScore;
-    statsLastQuestions.textContent = gameState.stats.lastQuestions;
+    statsHighscore.textContent = highScore;
+    statsLastScore.textContent = lastScore;
+    statsLastQuestions.textContent = lastQuestions;
 }
 
 // Reseta o estado do jogo

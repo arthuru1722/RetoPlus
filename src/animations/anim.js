@@ -296,7 +296,14 @@ function resetTempoEsgotado(action) {
 
     tl.to(TE_content, {
         opacity: 0,
-        duration: 0.5
+        duration: 0.5,
+        onComplete: () => {
+            if (action === 0) {
+                main.changeScreen(0);
+            }else if (action === 1) {
+                main.changeScreen(1);
+            }
+        }
     }, "<")
 
     .to(relogio, {
@@ -313,13 +320,6 @@ function resetTempoEsgotado(action) {
         scale: 0.5,  
         duration: 1,
         ease: "power4.inOut",
-        onComplete: () => {
-            if (action === 0) {
-                main.changeScreen(0);
-            }else if (action === 1) {
-                main.changeScreen(1);
-            }
-        }
     }, "-=1")
 
     .to(relogio, {
