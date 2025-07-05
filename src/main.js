@@ -7,15 +7,15 @@ const screens = {
     2: document.getElementById('screen-2')
 };
 
-const progressBar = document.getElementById('progress-bar');
-const continueText = document.getElementById('continue-text');
+const statsTotalTime = document.getElementById('stats-total-time');
+const statsCorrectTotal = document.getElementById('stats-correct-total');
+const statsWrongTotal = document.getElementById('stats-wrong-total');
+const statsInaccuracy = document.getElementById('stats-inaccuracy');
+const statsLongestGameTime = document.getElementById('stats-longest-game-time');
 const questionText = document.getElementById('question-text');
 const timerDisplay = document.getElementById('timer');
 const scoreDisplay = document.getElementById('score');
 const optionsContainer = document.getElementById('options-container');
-const finalScoreDisplay = document.getElementById('final-score');
-const totalQuestionsDisplay = document.getElementById('total-questions');
-const hintText = document.getElementById('hint-text');
 
 // Elementos de estatísticas
 const statsQuestions = document.getElementById('stats-questions');
@@ -166,77 +166,6 @@ function deathScreen(action) {
         changeScreen(1);        
         anim.resetAnimation();   
     }
-}
-
-
-
-// Tela de loading
-async function startLoadingScreen() {
-    try {
-        // Carrega as dicas primeiro
-        await loadHints();
-        
-        // Mostra uma dica aleatória
-        showRandomHint();
-        
-        // Simula o carregamento
-        setTimeout(() => {
-            progressBar.classList.add('fade-out');
-            setTimeout(() => {
-                progressBar.classList.add('hidden');
-                continueText.classList.remove('hidden');  
-                continueText.classList.add('pulse');
-                
-                // Quando o usuário clicar, vai para o jogo
-                screens['loading'].addEventListener('click', () => {
-                    changeScreen(1);
-                }, { once: true });
-            }, 500);
-        }, 3000);
-    } catch (error) {
-        console.error('Erro na tela de loading:', error);
-        // Fallback: vai direto para o jogo se houver erro
-        changeScreen(1);
-    }
-}
-
-async function loadHints() {
-    const response = await fetch('https://raw.githubusercontent.com/arthuru1722/reto-lib/main/hints.js');
-    if (!response.ok) throw new Error(`Erro HTTP! status: ${response.status}`);
-    
-    let text = await response.text();
-    
-    // Extrai apenas o conteúdo do array
-    const arrayStart = text.indexOf('[');
-    const arrayEnd = text.lastIndexOf(']');
-    const arrayContent = text.slice(arrayStart, arrayEnd + 1);
-    
-    // Analisa o array com tratamento de erro robusto
-    try {
-        // Primeiro tenta com JSON.parse (mais seguro)
-        gameState.allHints = JSON.parse(arrayContent.replace(/'/g, '"'));
-    } catch (e) {
-        // Se falhar, tenta com eval (mais permissivo)
-        try {
-            gameState.allHints = eval(`(${arrayContent})`);
-        } catch (evalError) {
-            console.error('Falha ao analisar dicas:', evalError);
-            throw new Error('Formato de dicas inválido');
-        }
-    }
-    
-    // Verificação final
-    if (!Array.isArray(gameState.allHints)) {
-        throw new Error('Dicas não estão em formato de array');
-    }
-    
-    console.log(`Carregadas ${gameState.allHints.length} dicas`);
-}
-function showRandomHint() {
-    if (gameState.allHints.length === 0) return;
-    
-    const randomIndex = Math.floor(Math.random() * gameState.allHints.length);
-    hintText.textContent = gameState.allHints[randomIndex];
 }
 
 // Inicia o jogo
@@ -459,7 +388,7 @@ function updateGameUI() {
     scoreDisplay.textContent = gameState.score;
 }
 
-// Atualiza as estatísticas
+// Atualize a função updateStats()
 function updateStats() {
     const sessions = JSON.parse(localStorage.getItem('gameSessions')) || [];
     const completedSessions = sessions.filter(s => s.completed);
@@ -470,6 +399,8 @@ function updateStats() {
     let highScore = 0;
     let lastScore = 0;
     let lastQuestions = 0;
+    let longestGameTime = 0; // Em segundos
+    let totalGameTime = 0;   // Em segundos
 
     if (completedSessions.length > 0) {
         // Última sessão
@@ -488,19 +419,53 @@ function updateStats() {
             if (session.score > highScore) {
                 highScore = session.score;
             }
+            
+            // Calcular duração da partida
+            const startTime = new Date(session.startTime);
+            const endTime = new Date(session.endTime);
+            const durationSeconds = (endTime - startTime) / 1000;
+            totalGameTime += durationSeconds;
+            
+            if (durationSeconds > longestGameTime) {
+                longestGameTime = durationSeconds;
+            }
         });
     }
 
-    // Calcular taxa de acertos
+    // Calcular taxas
     const accuracy = totalQuestions > 0 ? 
         Math.round((correctAnswers / totalQuestions) * 100) : 0;
+    
+    const inaccuracy = totalQuestions > 0 ? 
+        Math.round(((totalQuestions - correctAnswers) / totalQuestions) * 100) : 0;
+
+    // Formatar tempos
+    const formatTotalTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const formatGameTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     // Atualizar UI
     statsQuestions.textContent = totalQuestions;
+    statsCorrectTotal.textContent = correctAnswers;
+    statsWrongTotal.textContent = totalQuestions - correctAnswers;
     statsAccuracy.textContent = `${accuracy}%`;
+    statsInaccuracy.textContent = `${inaccuracy}%`;
     statsHighscore.textContent = highScore;
+    statsLongestGameTime.textContent = formatGameTime(longestGameTime);
     statsLastScore.textContent = lastScore;
     statsLastQuestions.textContent = lastQuestions;
+    
+    // Atualizar tempo total de jogo
+    statsTotalTime.textContent = formatTotalTime(totalGameTime);
 }
 
 // Reseta o estado do jogo
@@ -515,4 +480,4 @@ function resetGameState() {
 }
 
 // Inicializa o jogo na tela inicial
-changeScreen('0');
+changeScreen('2');
